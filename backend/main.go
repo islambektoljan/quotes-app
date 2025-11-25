@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+
 	"quotes-app/config"
 	"quotes-app/handlers"
 	"quotes-app/middleware"
@@ -10,30 +11,30 @@ import (
 )
 
 func main() {
-	// Подключение к БД
+	// Подключение к БД и JWT
 	config.ConnectDatabase()
 	config.InitJWT()
-
-	// Автомиграция
-	//err := config.DB.AutoMigrate(
-	//	&models.User{},
-	//	&models.Quote{},
-	//	&models.Category{},
-	//	&models.QuoteLike{},
-	//	&models.Comment{},
-	//	&models.CommentLike{},
-	//)
-	//if err != nil {
-	//	log.Fatal("Failed to migrate database:", err)
-	//}
-	//
-	//log.Println("Database migration completed successfully")
 
 	log.Println("Database connected successfully. Using SQL migrations.")
 
 	router := gin.Default()
 
-	// Middleware
+	// ===== CORS =====
+	router.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	})
+	// =================
+
+	// Базовые middleware
 	router.Use(gin.Recovery())
 	router.Use(gin.Logger())
 
@@ -43,15 +44,16 @@ func main() {
 	categoryHandler := handlers.NewCategoryHandler()
 	commentHandler := handlers.NewCommentHandler()
 
-	// Public routes
+	// --- Публичные роуты ---
 	router.POST("/register", authHandler.Register)
 	router.POST("/login", authHandler.Login)
+
 	router.GET("/quotes", quoteHandler.GetQuotes)
 	router.GET("/quotes/:id", quoteHandler.GetQuoteByID)
 	router.GET("/categories", categoryHandler.GetCategories)
 	router.GET("/quotes/:id/comments", commentHandler.GetComments)
 
-	// Protected routes
+	// --- Защищённые роуты (нужен JWT) ---
 	auth := router.Group("/")
 	auth.Use(middleware.AuthMiddleware())
 	{
@@ -77,7 +79,7 @@ func main() {
 		})
 	})
 
-	// Database check
+	// DB check
 	router.GET("/db-check", func(c *gin.Context) {
 		var result struct {
 			UsersCount      int64 `json:"users_count"`

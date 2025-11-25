@@ -2,18 +2,19 @@ FROM golang:1.25-alpine
 
 WORKDIR /app
 
-# Копируем файлы зависимостей
-COPY go.mod go.sum ./
-RUN go mod download
-
-# Копируем исходный код
+# Копируем go.mod и ВСЕ исходники
+COPY go.mod ./
 COPY . .
+
+# Генерируем go.sum
+RUN go mod tidy
+
+# Скачиваем зависимости
+RUN go mod download
 
 # Собираем приложение
 RUN go build -o main .
 
-# Экспонируем порт
 EXPOSE 8080
 
-# Запускаем приложение
 CMD ["./main"]

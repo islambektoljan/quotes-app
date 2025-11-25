@@ -5,7 +5,6 @@ import (
 	"quotes-app/config"
 	"quotes-app/handlers"
 	"quotes-app/middleware"
-	"quotes-app/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,19 +15,21 @@ func main() {
 	config.InitJWT()
 
 	// Автомиграция
-	err := config.DB.AutoMigrate(
-		&models.User{},
-		&models.Quote{},
-		&models.Category{},
-		&models.QuoteLike{},
-		&models.Comment{},
-		&models.CommentLike{},
-	)
-	if err != nil {
-		log.Fatal("Failed to migrate database:", err)
-	}
+	//err := config.DB.AutoMigrate(
+	//	&models.User{},
+	//	&models.Quote{},
+	//	&models.Category{},
+	//	&models.QuoteLike{},
+	//	&models.Comment{},
+	//	&models.CommentLike{},
+	//)
+	//if err != nil {
+	//	log.Fatal("Failed to migrate database:", err)
+	//}
+	//
+	//log.Println("Database migration completed successfully")
 
-	log.Println("Database migration completed successfully")
+	log.Println("Database connected successfully. Using SQL migrations.")
 
 	router := gin.Default()
 

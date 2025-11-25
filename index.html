@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    
+    <meta charset="UTF-8">
+    <title>Quotes Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* ===== БАЗА ===== */
+
+    body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #0b1120;              /* тёмный синий/серый */
+        color: #e5e7eb;                   /* светло-серый текст */
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .app {
+        width: 100%;
+        max-width: 900px;
+        background: #020617;              /* почти чёрный */
+        border-radius: 18px;
+        padding: 20px 18px 24px;
+        box-shadow: 0 24px 40px -18px rgba(0, 0, 0, 0.9);
+        border: 1px solid #1f2937;        /* нейтральный бордер */
+        position: relative;
+        overflow: hidden;
+    }
+
+    .app::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+            radial-gradient(circle at 10% 15%, rgba(148, 163, 184, 0.18) 0, transparent 55%),
+            radial-gradient(circle at 80% 85%, rgba(148, 163, 184, 0.1) 0, transparent 60%);
+        opacity: 0.18;
+        mix-blend-mode: screen;
+    }
+
+    header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #e5e7eb;
+    }
+
+    .title span.logo {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        background: #1f2937;
+        border: 1px solid #4b5563;
+        font-weight: 800;
+        font-size: 0.9rem;
+        color: #e5e7eb;
+    }
+
+    .subtitle {
+        font-size: 0.8rem;
+        color: #9ca3af;
+    }
+
+    .pill {
+        font-size: 0.75rem;
+        border-radius: 999px;
+        padding: 4px 10px;
+        background: #111827;
+        border: 1px solid #4b5563;
+        color: #e5e7eb;
+    }
+
+    main {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+        gap: 16px;
+    }
+
+    @media (max-width: 768px) {
+        main {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
+    /* ===== ПАНЕЛИ ===== */
+
+    .panel {
+        background: #020617;
+        border-radius: 16px;
+        padding: 14px 14px 16px;
+        border: 1px solid #1f2937;
+        min-height: 120px;
+    }
+
+    .panel.right {
+        background: #020617;
+    }
+
+    .panel h2 {
+        font-size: 0.95rem;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #e5e7eb;
+    }
+
+    .panel h2 span.small {
+        font-size: 0.75rem;
+        color: #9ca3af;
+        font-weight: 400;
+    }
+
+    label {
+        display: block;
+        font-size: 0.78rem;
+        margin-bottom: 4px;
+        color: #e5e7eb;
+    }
+
+    input[type="text"],
+    textarea {
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid #374151;
+        background: #020617;
+        padding: 8px 9px;
+        font-size: 0.85rem;
+        color: #e5e7eb;
+        outline: none;
+        transition: border 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 70px;
+        max-height: 160px;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: #6b7280;
+    }
+
+    input:focus,
+    textarea:focus {
+        border-color: #3b82f6;           /* аккуратный синий акцент */
+        box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+        background: #020617;
+    }
+
+    .field {
+        margin-bottom: 8px;
+    }
+
+    /* ===== КНОПКИ ===== */
+
+    .btn-row {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 6px;
+    }
+
+    button {
+        border-radius: 999px;
+        border: 0;
+        padding: 7px 14px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #111827;
+        color: #e5e7eb;
+        transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease, opacity 0.1s ease;
+    }
+
+    button.primary {
+        background: #3b82f6;
+        color: #f9fafb;
+        box-shadow: 0 8px 18px -8px rgba(37, 99, 235, 0.8);
+    }
+
+    button.primary:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+    }
+
+    button.secondary {
+        background: #020617;
+        border: 1px solid #4b5563;
+    }
+
+    button.secondary:hover {
+        background: #111827;
+        transform: translateY(-1px);
+    }
+
+    button.icon {
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        border: 1px solid #4b5563;
+        background: #020617;
+    }
+
+    button.icon:hover {
+        background: #111827;
+    }
+
+    button.danger {
+        background: #7f1d1d;
+        border-color: #b91c1c;
+        color: #f9fafb;
+    }
+
+    button.danger:hover {
+        background: #991b1b;
+    }
+
+    button:disabled {
+        opacity: 0.6;
+        cursor: default;
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* ===== СТАТУСЫ ===== */
+
+    .status {
+        font-size: 0.75rem;
+        color: #9ca3af;
+        margin-top: 6px;
+        min-height: 16px;
+    }
+
+    .status.error {
+        color: #f97373;
+    }
+
+    .status.ok {
+        color: #4ade80;
+    }
+
+    /* ===== СПИСОК ЦИТАТ ===== */
+
+    .quotes-list {
+        margin-top: 6px;
+        max-height: 420px;
+        overflow-y: auto;
+        padding-right: 4px;
+    }
+
+    .empty-state {
+        font-size: 0.8rem;
+        color: #6b7280;
+        padding: 12px 4px;
+    }
+
+    .quote-card {
+        border-radius: 12px;
+        border: 1px solid #1f2937;
+        padding: 9px 10px 10px;
+        background: #020617;
+        margin-bottom: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .quote-text {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: #e5e7eb;
+    }
+
+    .quote-text::before,
+    .quote-text::after {
+        content: '"';
+        color: #9ca3af;
+    }
+
+    .quote-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.75rem;
+        margin-top: 2px;
+    }
+
+    .quote-author {
+        color: #9ca3af;
+    }
+
+    .quote-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .likes-pill {
+        font-size: 0.75rem;
+        border-radius: 999px;
+        padding: 2px 8px;
+        background: #111827;
+        border: 1px solid #374151;
+        color: #e5e7eb;
+    }
+
+    .tag {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 999px;
+        border: 1px solid #4b5563;
+        color: #9ca3af;
+    }
+</style>
+
+
+</head>
+<body>
+<div class="app">
+    <header>
+        <div>
+            <div class="title">
+                <span class="logo">Q</span>
+                Quotes Hub
+            </div>
+            <div class="subtitle">
+                Simple quotes board with likes — CRUD + DB ready.
+            </div>
+        </div>
+        <div class="pill">
+            DBMS Project · CRUD + Likes
+        </div>
+    </header>
+
+    <main>
+        <!-- LEFT: Quotes list -->
+        <section class="panel">
+            <h2>
+                Quotes
+                <span class="small" id="quotesCountLabel">loading...</span>
+            </h2>
+            <div class="quotes-list" id="quotesList">
+                <!-- Quotes will be rendered here -->
+            </div>
+            <div class="status" id="listStatus"></div>
+        </section>
+
+        <!-- RIGHT: Form -->
+        <section class="panel right">
+            <h2>
+                <span id="formTitle">Add new quote</span>
+                <span class="small">
+                    <span class="tag" id="formModeTag">CREATE</span>
+                </span>
+            </h2>
+
+            <form id="quoteForm">
+                <input type="hidden" id="quoteId">
+
+                <div class="field">
+                    <label for="quoteText">Quote text</label>
+                    <textarea id="quoteText" placeholder="Type the quote here..." required></textarea>
+                </div>
+
+                <div class="field">
+                    <label for="quoteAuthor">Author</label>
+                    <input id="quoteAuthor" type="text" placeholder="e.g. Albert Einstein" required>
+                </div>
+
+                <div class="btn-row">
+                    <button type="button" class="secondary" id="cancelEditBtn" style="display: none;">
+                        Cancel
+                    </button>
+                    <button type="submit" class="primary" id="submitBtn">
+                        Save quote
+                    </button>
+                </div>
+            </form>
+
+            <div class="status" id="formStatus"></div>
+        </section>
+    </main>
+</div>
+
+<script>
+"use strict";
+
+// Бэкенд
+const API_BASE_URL = "http://localhost:8080";
+
+// ====== AUTH ======
+let authToken = null;
+
+// регаем + логиним демо-пользователя
+async function setupAuth() {
+    const email = "demo@example.com";
+    const password = "password123";
+    const username = "demo";
+
+    // пробуем зарегистрировать (если уже есть — просто игнорим ошибку)
+    try {
+        await fetch(API_BASE_URL + "/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: username, email: email, password: password })
+        });
+    } catch (e) {
+        console.warn("Register failed (может, юзер уже есть) ->", e.message);
+    }
+
+    // логин
+    const resp = await fetch(API_BASE_URL + "/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, password: password })
+    });
+    if (!resp.ok) {
+        throw new Error("Login failed: " + resp.status);
+    }
+    const data = await resp.json();
+    authToken = data.token;
+    console.log("Auth OK, token получен");
+}
+
+async function ensureAuth() {
+    if (!authToken) {
+        await setupAuth();
+    }
+}
+
+// ====== DOM ======
+const quotesListEl = document.getElementById("quotesList");
+const listStatusEl = document.getElementById("listStatus");
+const quotesCountLabelEl = document.getElementById("quotesCountLabel");
+
+const quoteForm = document.getElementById("quoteForm");
+const quoteIdInput = document.getElementById("quoteId");
+const quoteTextInput = document.getElementById("quoteText");
+const quoteAuthorInput = document.getElementById("quoteAuthor");
+const formStatusEl = document.getElementById("formStatus");
+const submitBtn = document.getElementById("submitBtn");
+const cancelEditBtn = document.getElementById("cancelEditBtn");
+const formTitleEl = document.getElementById("formTitle");
+const formModeTagEl = document.getElementById("formModeTag");
+
+// ===== HELPERS =====
+function setListStatus(message, isError) {
+    listStatusEl.textContent = message || "";
+    listStatusEl.className = "status" + (isError ? " error" : "");
+}
+
+function setFormStatus(message, type) {
+    formStatusEl.textContent = message || "";
+    formStatusEl.className = "status" + (type ? " " + type : "");
+}
+
+function setLoading(loading) {
+    submitBtn.disabled = loading;
+    quoteTextInput.disabled = loading;
+    quoteAuthorInput.disabled = loading;
+}
+
+function resetForm() {
+    quoteIdInput.value = "";
+    quoteTextInput.value = "";
+    quoteAuthorInput.value = "";
+    formTitleEl.textContent = "Add new quote";
+    formModeTagEl.textContent = "CREATE";
+    formModeTagEl.style.borderColor = "rgba(52,211,153,0.7)";
+    formModeTagEl.style.color = "#6ee7b7";
+    cancelEditBtn.style.display = "none";
+    setFormStatus("");
+}
+
+function enterEditMode(quote) {
+    quoteIdInput.value = quote.id;
+    quoteTextInput.value = quote.content || "";
+    quoteAuthorInput.value = quote.author || "";
+    formTitleEl.textContent = "Edit quote";
+    formModeTagEl.textContent = "EDIT";
+    formModeTagEl.style.borderColor = "rgba(251,191,36,0.9)";
+    formModeTagEl.style.color = "#facc15";
+    cancelEditBtn.style.display = "inline-flex";
+    setFormStatus("Edit mode. Make changes and press Save.", "ok");
+}
+
+function getQuoteUrl(id) {
+    return id ? API_BASE_URL + "/quotes/" + encodeURIComponent(id) : API_BASE_URL + "/quotes";
+}
+
+async function fetchJson(url, options) {
+    options = options || {};
+    options.headers = options.headers || {};
+
+    // если есть токен — всегда докидываем его
+    if (authToken) {
+        options.headers["Authorization"] = "Bearer " + authToken;
+    }
+
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+        let msg = "HTTP error " + response.status;
+        try {
+            const body = await response.json();
+            if (body && body.message) msg = body.message;
+        } catch (_) {}
+        throw new Error(msg);
+    }
+    if (response.status === 204) return null;
+    return response.json();
+}
+
+// ===== LOAD & RENDER =====
+async function loadQuotes() {
+    setListStatus("Loading quotes...");
+    try {
+        const data = await fetchJson(API_BASE_URL + "/quotes", { method: "GET" });
+
+        const quotes = data && Array.isArray(data.quotes) ? data.quotes : [];
+
+        quotesListEl.innerHTML = "";
+        if (quotes.length === 0) {
+            quotesListEl.innerHTML =
+                '<div class="empty-state">No quotes yet. Add the first one on the right ➜</div>';
+            quotesCountLabelEl.textContent = "0 quotes";
+        } else {
+            quotesCountLabelEl.textContent =
+                quotes.length + (quotes.length === 1 ? " quote" : " quotes");
+            quotes.forEach(function (q) {
+                quotesListEl.appendChild(createQuoteCard(q));
+            });
+        }
+        setListStatus("");
+    } catch (err) {
+        console.error(err);
+        setListStatus("Failed to load quotes: " + err.message, true);
+        quotesCountLabelEl.textContent = "error";
+    }
+}
+
+function createQuoteCard(quote) {
+    const card = document.createElement("div");
+    card.className = "quote-card";
+
+    const textEl = document.createElement("div");
+    textEl.className = "quote-text";
+    textEl.textContent = quote.content || "";
+
+    const metaEl = document.createElement("div");
+    metaEl.className = "quote-meta";
+
+    const authorEl = document.createElement("div");
+    authorEl.className = "quote-author";
+    authorEl.textContent = quote.author ? "— " + quote.author : "— Unknown";
+
+    const actionsEl = document.createElement("div");
+    actionsEl.className = "quote-actions";
+
+    const likesEl = document.createElement("span");
+    likesEl.className = "likes-pill";
+    const likesCount = typeof quote.likes_count === "number" ? quote.likes_count : 0;
+    likesEl.textContent = "❤ " + likesCount + (likesCount === 1 ? " like" : " likes");
+
+    const likeBtn = document.createElement("button");
+    likeBtn.className = "icon";
+    likeBtn.type = "button";
+    likeBtn.textContent = "Like";
+    likeBtn.addEventListener("click", function () {
+        handleLike(quote.id);
+    });
+
+    const editBtn = document.createElement("button");
+    editBtn.className = "icon";
+    editBtn.type = "button";
+    editBtn.textContent = "Edit";
+    editBtn.addEventListener("click", function () {
+        enterEditMode(quote);
+    });
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "icon danger";
+    deleteBtn.type = "button";
+    deleteBtn.textContent = "Delete";
+    deleteBtn.addEventListener("click", function () {
+        if (confirm("Delete this quote?")) {
+            handleDelete(quote.id);
+        }
+    });
+
+    actionsEl.appendChild(likesEl);
+    actionsEl.appendChild(likeBtn);
+    actionsEl.appendChild(editBtn);
+    actionsEl.appendChild(deleteBtn);
+
+    metaEl.appendChild(authorEl);
+    metaEl.appendChild(actionsEl);
+
+    card.appendChild(textEl);
+    card.appendChild(metaEl);
+
+    return card;
+}
+
+// ===== CRUD =====
+async function handleLike(id) {
+    if (!id) return;
+    setListStatus("Sending like...");
+    try {
+        await ensureAuth();
+        await fetchJson(API_BASE_URL + "/quotes/" + id + "/like", { method: "POST" });
+        setListStatus("Liked!", false);
+        await loadQuotes();
+    } catch (err) {
+        console.error(err);
+        setListStatus("Failed to like: " + err.message, true);
+    }
+}
+
+async function handleDelete(id) {
+    if (!id) return;
+    setListStatus("Deleting...");
+    try {
+        await ensureAuth();
+        await fetchJson(getQuoteUrl(id), { method: "DELETE" });
+        setListStatus("Deleted successfully.", false);
+        await loadQuotes();
+    } catch (err) {
+        console.error(err);
+        setListStatus("Failed to delete: " + err.message, true);
+    }
+}
+
+async function handleSubmit(e) {
+    e.preventDefault();
+    setFormStatus("");
+
+    const text = quoteTextInput.value.trim();
+    const author = quoteAuthorInput.value.trim();
+    const id = quoteIdInput.value.trim();
+
+    if (!text || !author) {
+        setFormStatus("Please fill in both fields.", "error");
+        return;
+    }
+
+    // backend ждёт: content, author, category_id
+    const payload = {
+        content: text,
+        author: author,
+        category_id: 1
+    };
+
+    setLoading(true);
+    try {
+        await ensureAuth();
+
+        if (id) {
+            await fetchJson(getQuoteUrl(id), {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            setFormStatus("Quote updated.", "ok");
+        } else {
+            await fetchJson(getQuoteUrl(), {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            setFormStatus("Quote added.", "ok");
+        }
+
+        resetForm();
+        await loadQuotes();
+    } catch (err) {
+        console.error(err);
+        setFormStatus("Failed to save: " + err.message, "error");
+    } finally {
+        setLoading(false);
+    }
+}
+
+// ===== EVENTS & INIT =====
+quoteForm.addEventListener("submit", handleSubmit);
+cancelEditBtn.addEventListener("click", resetForm);
+
+// сначала пытаемся залогиниться, параллельно можем грузить список
+setupAuth()
+    .then(() => console.log("Auth ready"))
+    .catch(err => console.error("Auth error", err));
+
+loadQuotes();
+</script>
+
+
+
+
+</body>
+</html>
